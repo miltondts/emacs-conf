@@ -76,37 +76,16 @@
 ;; activate auto-fill-mode for various other modes
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 (add-hook 'scheme-mode-hook 'turn-on-auto-fill)
-(defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
-  "Prevent annoying \"Active processes exist\" query when you quit Emacs."
-  (flet ((process-list ())) ad-do-it))
+
+(setq custom-file "~/.emacs.d/custom.el")
+
+(load custom-file)
 
 (require 'package)
 
 (package-initialize)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   (quote
-    ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" default)))
- '(package-selected-packages
-   (quote
-    (magit spacemacs-theme org-bullets which-key smex ergoemacs-mode cider geiser))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-
-(load (expand-file-name "~/quicklisp/slime-helper.el"))
-;; Replace "sbcl" with the path to your implementation
-(setq inferior-lisp-program "sbcl")
 
 (ido-mode 1)
-
 (smex-initialize)
 
 (setq ergoemacs-theme nil)
@@ -118,3 +97,23 @@
 (show-paren-mode 1)
 
 (load-theme 'spacemacs-dark t)
+
+(defun my-dired-mode-hook ()
+  ;; To hide dot-files by default
+  (dired-hide-dotfiles-mode)
+
+  ;; To toggle hiding
+  (define-key dired-mode-map "." #'dired-hide-dotfiles-mode)
+  (define-key dired-mode-map "i" 'dired-subtree-insert)
+  (define-key dired-mode-map ";" 'dired-subtree-remove)
+  (define-key dired-mode-map [return] 'dired-single-buffer)
+  (define-key dired-mode-map [mouse-1] 'dired-single-buffer-mouse)
+  (define-key dired-mode-map "^"
+    (function
+     (lambda nil (interactive) (dired-single-buffer "..")))))
+
+(add-hook 'dired-mode-hook #'my-dired-mode-hook)
+
+(global-auto-revert-mode)
+
+(setq tramp-default-method "ssh")
