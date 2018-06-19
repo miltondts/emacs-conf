@@ -76,9 +76,6 @@
 ;; activate auto-fill-mode for various other modes
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 (add-hook 'scheme-mode-hook 'turn-on-auto-fill)
-(defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
-  "Prevent annoying \"Active processes exist\" query when you quit Emacs."
-  (flet ((process-list ())) ad-do-it))
 
 (require 'package)
 
@@ -144,7 +141,10 @@
 
 (setq tramp-default-method "ssh")
 
-(define-key shell-mode-map (kbd "C-r") 'comint-history-isearch-backward-regexp)
+(add-hook 'shell-mode-hook
+	  (lambda () (local-set-key (kbd "C-r") #'comint-history-isearch-backward-regexp)))
+
+(setq confirm-kill-processes nil)
 
 (load (expand-file-name "~/quicklisp/slime-helper.el"))
 ;; Replace "sbcl" with the path to your implementation
